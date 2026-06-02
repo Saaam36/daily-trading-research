@@ -3,11 +3,34 @@
 Fundamental snapshot using yfinance (no API key, cloud-compatible).
 Usage: python3 fundamental_snapshot.py TICKER
 """
-import sys, json
-from datetime import datetime
+import sys, json, os
+from datetime import datetime, timezone
+from pathlib import Path
+
+CACHE_DIR = Path(__file__).parent.parent / 'data' / 'stocks'
+CACHE_MAX_AGE_HOURS = 20
+
+
+def _load_cache(ticker):
+    path = CACHE_DIR / f'{ticker}_fund.json'
+    if not path.exists():
+        return None
+    mtime = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+    age_hours = (datetime.now(tz=timezone.utc) - mtime).total_seconds() / 3600
+    if age_hours > CACHE_MAX_AGE_HOURS:
+        return None
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except Exception:
+        return None
 
 
 def analyze(ticker):
+    cached = _load_cache(ticker)
+    if cached:
+        return cached
+
     import yfinance as yf
 
     stock = yf.Ticker(ticker)

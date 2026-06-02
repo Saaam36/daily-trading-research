@@ -5,8 +5,26 @@ Scans a predefined universe of growth/momentum stocks and scores on CANSLIM crit
 Usage: python3 yf_screener.py [--max-candidates N]
 Output: JSON list of top candidates with scores
 """
-import sys, json, time
-from datetime import datetime
+import sys, json, time, os
+from datetime import datetime, timezone
+from pathlib import Path
+
+CACHE_FILE = Path(__file__).parent.parent / 'data' / 'screener.json'
+CACHE_MAX_AGE_HOURS = 20
+
+
+def _load_cache():
+    if not CACHE_FILE.exists():
+        return None
+    mtime = datetime.fromtimestamp(CACHE_FILE.stat().st_mtime, tz=timezone.utc)
+    age_hours = (datetime.now(tz=timezone.utc) - mtime).total_seconds() / 3600
+    if age_hours > CACHE_MAX_AGE_HOURS:
+        return None
+    try:
+        with open(CACHE_FILE) as f:
+            return json.load(f)
+    except Exception:
+        return None
 
 UNIVERSE = [
     # AI / Semiconductors
@@ -85,6 +103,11 @@ def score_candidate(ticker, info, closes, volumes):
 
 
 def screen(max_candidates=20):
+    cached = _load_cache()
+    if cached:
+        cached['candidates'] = cached.get('candidates', [])[:max_candidates]
+        return cached
+
     import yfinance as yf
 
     candidates = []
