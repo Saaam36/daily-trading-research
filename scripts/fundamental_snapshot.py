@@ -1,66 +1,82 @@
 #!/usr/bin/env python3
 """
-Fundamental snapshot for a single stock using FMP API.
+Fundamental snapshot using yfinance (no API key, cloud-compatible).
 Usage: python3 fundamental_snapshot.py TICKER
-Output: JSON with key metrics + score + conclusion
 """
-import sys, os, json, requests
+import sys, json
 from datetime import datetime
 
-API_KEY = os.environ.get('FMP_API_KEY', '')
-BASE = 'https://financialmodelingprep.com/api/v3'
-
-def fetch(path):
-    sep = '&' if '?' in path else '?'
-    url = f"{BASE}/{path}{sep}apikey={API_KEY}"
-    try:
-        r = requests.get(url, timeout=10)
-        return r.json() if r.status_code == 200 else []
-    except Exception:
-        return []
 
 def analyze(ticker):
-    income_q  = fetch(f"income-statement/{ticker}?period=quarter&limit=8")
-    balance_q = fetch(f"balance-sheet-statement/{ticker}?period=quarter&limit=4")
-    cashflow_q= fetch(f"cash-flow-statement/{ticker}?period=quarter&limit=4")
-    metrics_a = fetch(f"key-metrics/{ticker}?period=annual&limit=1")
+    import yfinance as yf
 
+    stock = yf.Ticker(ticker)
+    info  = stock.info
     result = {'ticker': ticker, 'timestamp': datetime.now().isoformat()}
 
-    # Revenue & EPS growth
-    if len(income_q) >= 5:
-        rev_now      = income_q[0].get('revenue', 0) or 0
-        rev_year_ago = income_q[4].get('revenue', 0) or 0
-        eps_series   = [q.get('eps', 0) or 0 for q in income_q]
+    # Revenue growth
+    rev_growth = info.get('revenueGrowth')
+    if rev_growth is not None:
+        result['revenue_yoy_pct'] = round(float(rev_growth) * 100, 1)
+    else:
+        try:
+            q = getattr(stock, 'quarterly_income_stmt', None) or stock.quarterly_financials
+            for key in ('Total Revenue', 'Revenue'):
+                if key in q.index and q.shape[1] >= 5:
+                    r_now = float(q.loc[key].iloc[0])
+                    r_ago = float(q.loc[key].iloc[4])
+                    if abs(r_ago) > 0:
+                        result['revenue_yoy_pct'] = round((r_now - r_ago) / abs(r_ago) * 100, 1)
+                    break
+        except Exception:
+            pass
 
-        result['revenue_yoy_pct'] = round((rev_now - rev_year_ago) / max(abs(rev_year_ago), 1) * 100, 1)
-        result['eps_latest']      = eps_series[0]
-        result['eps_yoy_pct']     = round((eps_series[0] - eps_series[4]) / max(abs(eps_series[4]), 0.01) * 100, 1) if eps_series[4] != 0 else None
-        result['eps_trend']       = 'accelerating' if eps_series[0] > eps_series[1] > eps_series[2] else 'mixed'
-        result['gross_margin_pct']= round((income_q[0].get('grossProfitRatio') or 0) * 100, 1)
-        result['net_margin_pct']  = round((income_q[0].get('netIncomeRatio')   or 0) * 100, 1)
+    # EPS growth
+    eps_growth = info.get('earningsGrowth')
+    if eps_growth is not None:
+        result['eps_yoy_pct'] = round(float(eps_growth) * 100, 1)
+
+    # EPS trend from quarterly data
+    try:
+        q = getattr(stock, 'quarterly_income_stmt', None) or stock.quarterly_financials
+        for key in ('Basic EPS', 'Diluted EPS', 'EPS'):
+            if key in q.index:
+                vals = q.loc[key].dropna()
+                if len(vals) >= 3:
+                    v = [float(vals.iloc[i]) for i in range(min(5, len(vals)))]
+                    result['eps_latest'] = round(v[0], 2)
+                    result['eps_trend']  = 'accelerating' if v[0] > v[1] > v[2] else 'mixed'
+                    if result.get('eps_yoy_pct') is None and len(v) >= 5 and v[4] != 0:
+                        result['eps_yoy_pct'] = round((v[0] - v[4]) / abs(v[4]) * 100, 1)
+                break
+    except Exception:
+        result.setdefault('eps_trend', 'mixed')
+
+    # Margins
+    result['gross_margin_pct'] = round((info.get('grossMargins') or 0) * 100, 1)
+    result['net_margin_pct']   = round((info.get('profitMargins') or 0) * 100, 1)
 
     # Balance sheet
-    if balance_q:
-        total_debt = balance_q[0].get('totalDebt', 0) or 0
-        cash       = balance_q[0].get('cashAndCashEquivalents', 0) or 0
-        equity     = balance_q[0].get('totalStockholdersEquity', 1) or 1
-        result['debt_to_equity']   = round(total_debt / max(equity, 1), 2)
-        result['cash_usd_m']       = round(cash / 1e6, 1)
-        result['net_cash_positive']= cash > total_debt
+    de_raw = float(info.get('debtToEquity') or 0)
+    result['debt_to_equity']    = round(de_raw / 100, 2) if de_raw > 5 else round(de_raw, 2)
+    total_cash = info.get('totalCash') or 0
+    total_debt = info.get('totalDebt') or 0
+    result['cash_usd_m']        = round(total_cash / 1e6, 1)
+    result['net_cash_positive'] = total_cash > total_debt
 
     # Free cash flow
-    if cashflow_q and income_q:
-        fcf = cashflow_q[0].get('freeCashFlow', 0) or 0
-        ni  = income_q[0].get('netIncome', 1) or 1
-        result['fcf_usd_m']        = round(fcf / 1e6, 1)
-        result['fcf_to_ni_ratio']  = round(fcf / max(abs(ni), 1), 2)
+    fcf = info.get('freeCashflow') or 0
+    ni  = info.get('netIncomeToCommon') or 1
+    result['fcf_usd_m']       = round(fcf / 1e6, 1)
+    result['fcf_to_ni_ratio'] = round(fcf / max(abs(ni), 1), 2)
 
     # Valuation & ROE
-    if metrics_a:
-        result['ps_ratio'] = metrics_a[0].get('priceToSalesRatio')
-        result['pe_ratio'] = metrics_a[0].get('peRatio')
-        result['roe_pct']  = round((metrics_a[0].get('roe') or 0) * 100, 1)
+    ps  = info.get('priceToSalesTrailing12Months')
+    pe  = info.get('trailingPE')
+    roe = info.get('returnOnEquity') or 0
+    result['ps_ratio'] = round(float(ps), 1) if ps else None
+    result['pe_ratio'] = round(float(pe), 1) if pe else None
+    result['roe_pct']  = round(float(roe) * 100, 1)
 
     # Score
     score, positives, warnings = 0, [], []
@@ -93,15 +109,16 @@ def analyze(ticker):
     if fcf_ratio > 0.8:  score += 10; positives.append(f"自由现金流质量高 FCF/NI={fcf_ratio}")
     elif fcf_ratio < 0:  warnings.append("自由现金流为负")
 
-    roe = result.get('roe_pct') or 0
-    if roe > 20: score += 5; positives.append(f"ROE {roe}%")
+    roe_v = result.get('roe_pct') or 0
+    if roe_v > 20: score += 5; positives.append(f"ROE {roe_v}%")
 
-    result['fundamental_score']  = score
-    result['fundamental_grade']  = '强' if score >= 65 else ('中' if score >= 40 else '弱')
+    result['fundamental_score']     = score
+    result['fundamental_grade']     = '强' if score >= 65 else ('中' if score >= 40 else '弱')
     result['fundamental_positives'] = positives
     result['fundamental_warnings']  = warnings
 
     return result
+
 
 if __name__ == '__main__':
     ticker = sys.argv[1] if len(sys.argv) > 1 else 'NVDA'
