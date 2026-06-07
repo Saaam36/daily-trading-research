@@ -60,6 +60,32 @@ def fetch_all():
         results['errors']['screener'] = str(e)
         print(f"Screener error: {e}", flush=True)
 
+    # Fetch data for Serenity watchlist tickers not already in UNIVERSE
+    try:
+        import serenity_scan
+        serenity_extras = [t for t in serenity_scan.SERENITY_UNIVERSE if t not in UNIVERSE]
+        for ticker in serenity_extras:
+            print(f"[Serenity extra] {ticker}", flush=True)
+            try:
+                fund = fundamental_snapshot.analyze(ticker)
+                with open(OUT_DIR / f'{ticker}_fund.json', 'w') as f:
+                    json.dump(fund, f)
+            except Exception as e:
+                results['errors'][f'{ticker}_fund'] = str(e)
+            try:
+                tech = deep_technical.analyze(ticker)
+                with open(OUT_DIR / f'{ticker}_tech.json', 'w') as f:
+                    json.dump(tech, f)
+            except Exception as e:
+                results['errors'][f'{ticker}_tech'] = str(e)
+            time.sleep(0.5)
+        # Run Serenity scan and save
+        serenity_result = serenity_scan.scan()
+        print(f"Serenity scan saved ({len(serenity_result['results'])} stocks).", flush=True)
+    except Exception as e:
+        results['errors']['serenity'] = str(e)
+        print(f"Serenity scan error: {e}", flush=True)
+
     results['fetched'] = len([v for v in results['tickers'].values() if v == 'ok'])
     results['error_count'] = len(results['errors'])
 
