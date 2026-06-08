@@ -1,0 +1,226 @@
+{
+  "timestamp": "2026-06-08T23:10:45.167193+00:00",
+  "universe_count": 10,
+  "results": [
+    {
+      "ticker": "CRDO",
+      "theme": "AI Networking",
+      "thesis": "SerDes/connectivity chips for AI switches; 认证壁垒高、多客户design-win",
+      "chokepoint_score": 4,
+      "total_score": 67,
+      "grade": "⏳ 等待催化剂",
+      "signals": [
+        "卡点强度 4/5 (强)",
+        "Stage 2 确认 (Minervini趋势模板 ≥6/7)",
+        "距52周高点 6.5%",
+        "CANSLIM 双重确认 ✓ (同时命中成长股筛选器)"
+      ],
+      "warnings": [
+        "已re-rate至高估值"
+      ],
+      "price": 220.71,
+      "market_cap_b": null,
+      "stage2": true,
+      "pct_from_52w_high": -6.5,
+      "canslim_confirmed": true
+    },
+    {
+      "ticker": "CRS",
+      "theme": "SpaceX Supply Chain",
+      "thesis": "碳纤维复合材料结构件; 认证+唯一供应商地位、SpaceX放量即受益",
+      "chokepoint_score": 4,
+      "total_score": 67,
+      "grade": "⏳ 等待催化剂",
+      "signals": [
+        "卡点强度 4/5 (强)",
+        "Stage 2 确认 (Minervini趋势模板 ≥6/7)",
+        "成交量收缩 (vol_ratio=0.87x, 待突破)",
+        "距52周高点 0.0% (突破前夕)"
+      ],
+      "warnings": [],
+      "price": 499.09,
+      "market_cap_b": null,
+      "stage2": true,
+      "pct_from_52w_high": -0.0,
+      "canslim_confirmed": false
+    },
+    {
+      "ticker": "MRVL",
+      "theme": "AI Networking / Custom Silicon",
+      "thesis": "ASIC定制芯片+PCIe switch; 多超大云厂design-win",
+      "chokepoint_score": 3,
+      "total_score": 64,
+      "grade": "⏳ 等待催化剂",
+      "signals": [
+        "卡点强度 3/5 (中)",
+        "Stage 2 确认 (Minervini趋势模板 ≥6/7)",
+        "距52周高点 0.0% (突破前夕)",
+        "CANSLIM 双重确认 ✓ (同时命中成长股筛选器)"
+      ],
+      "warnings": [
+        "大市值($60B+)",
+        "已被充分发现"
+      ],
+      "price": 284.54,
+      "market_cap_b": null,
+      "stage2": true,
+      "pct_from_52w_high": 0.0,
+      "canslim_confirmed": true
+    },
+    {
+      "ticker": "ARM",
+      "theme": "CPU IP",
+      "thesis": "AI芯片IP授权; 收费站模式、几乎所有AI芯片都用ARM架构",
+      "chokepoint_score": 3,
+      "total_score": 64,
+      "grade": "⏳ 等待催化剂",
+      "signals": [
+        "卡点强度 3/5 (中)",
+        "Stage 2 确认 (Minervini趋势模板 ≥6/7)",
+        "距52周高点 0.0% (突破前夕)",
+        "CANSLIM 双重确认 ✓ (同时命中成长股筛选器)"
+      ],
+      "warnings": [
+        "大市值($130B+)",
+        "估值极高"
+      ],
+      "price": 412.92,
+      "market_cap_b": null,
+      "stage2": true,
+      "pct_from_52w_high": -0.0,
+      "canslim_confirmed": true
+    },
+    {
+      "ticker": "HXL",
+      "theme": "SpaceX Supply Chain",
+      "thesis": "航空航天复合材料; Falcon 9/Starship结构材料供应商",
+      "chokepoint_score": 3,
+      "total_score": 54,
+      "grade": "⏳ 等待催化剂",
+      "signals": [
+        "卡点强度 3/5 (中)",
+        "Stage 2 确认 (Minervini趋势模板 ≥6/7)",
+        "成交量收缩 (vol_ratio=0.68x, 待突破)",
+        "距52周高点 7.6%"
+      ],
+      "warnings": [
+        "大市值($4B+)",
+        "非纯标的"
+      ],
+      "price": 89.19,
+      "market_cap_b": null,
+      "stage2": true,
+      "pct_from_52w_high": -7.6,
+      "canslim_confirmed": false
+    },
+    {
+      "ticker": "AEHR",
+      "theme": "SiC Wafer Testing",
+      "thesis": "Wafer级老化测试; SiC功率芯片唯一量产测试方案",
+      "chokepoint_score": 3,
+      "total_score": 49,
+      "grade": "👀 观察名单",
+      "signals": [
+        "卡点强度 3/5 (中)",
+        "Stage 2 确认 (Minervini趋势模板 ≥6/7)",
+        "成交量收缩 (vol_ratio=0.84x, 待突破)"
+      ],
+      "warnings": [
+        "客户高度集中",
+        "EV周期依赖"
+      ],
+      "price": 95.58,
+      "market_cap_b": null,
+      "stage2": true,
+      "pct_from_52w_high": -18.0,
+      "canslim_confirmed": false
+    },
+    {
+      "ticker": "MTSI",
+      "theme": "AI Compound Semi",
+      "thesis": "GaN/GaAs/InP化合物半导体; AI光驱动+电力管理双用途",
+      "chokepoint_score": 3,
+      "total_score": 44,
+      "grade": "👀 观察名单",
+      "signals": [
+        "卡点强度 3/5 (中)",
+        "Stage 2 确认 (Minervini趋势模板 ≥6/7)",
+        "距52周高点 11.7%"
+      ],
+      "warnings": [],
+      "price": 361.86,
+      "market_cap_b": null,
+      "stage2": true,
+      "pct_from_52w_high": -11.7,
+      "canslim_confirmed": false
+    },
+    {
+      "ticker": "LUNR",
+      "theme": "SpaceX Ecosystem",
+      "thesis": "月球着陆器; SpaceX客户(Falcon 9发射), NASA合同背书",
+      "chokepoint_score": 2,
+      "total_score": 41,
+      "grade": "👀 观察名单",
+      "signals": [
+        "卡点强度 2/5 (弱)",
+        "Stage 2 确认 (Minervini趋势模板 ≥6/7)",
+        "成交量收缩 (vol_ratio=0.8x, 待突破)"
+      ],
+      "warnings": [
+        "零营收",
+        "纯期权期票",
+        "高投机性"
+      ],
+      "price": 29.74,
+      "market_cap_b": null,
+      "stage2": true,
+      "pct_from_52w_high": -34.9,
+      "canslim_confirmed": false
+    },
+    {
+      "ticker": "SIVE",
+      "theme": "AI Optical / CPO",
+      "thesis": "CW激光源卡点 for Co-Packaged Optics; 单点失效、认证周期长",
+      "chokepoint_score": 4,
+      "total_score": 32,
+      "grade": "👀 观察名单",
+      "signals": [
+        "卡点强度 4/5 (强)"
+      ],
+      "warnings": [
+        "已re-rate",
+        "Q1营收-22%",
+        "内部人近高位清仓",
+        "烧钱",
+        "趋势模板 0/7 (技术未就绪)"
+      ],
+      "price": null,
+      "market_cap_b": null,
+      "stage2": null,
+      "pct_from_52w_high": null,
+      "canslim_confirmed": false
+    },
+    {
+      "ticker": "SMCI",
+      "theme": "AI Server",
+      "thesis": "GPU服务器整合; 液冷技术领先、直接受益AI capex",
+      "chokepoint_score": 2,
+      "total_score": 16,
+      "grade": "👀 观察名单",
+      "signals": [
+        "卡点强度 2/5 (弱)"
+      ],
+      "warnings": [
+        "财务重述风险",
+        "已大幅波动",
+        "非上游卡点",
+        "趋势模板 4/7 (技术未就绪)"
+      ],
+      "price": 49.57,
+      "market_cap_b": null,
+      "stage2": false,
+      "pct_from_52w_high": -18.3,
+      "canslim_confirmed": false
+    }
+  ]
+}
